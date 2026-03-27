@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { type Seat } from "../types/seat";
+import { toast } from "sonner";
 
 type Store = {
     seats: Record<string, Seat>;
@@ -36,7 +37,7 @@ export const useSeatStore = create<Store>((set, get) => ({
 
         // Reject if not available
         if (!seat || seat.status !== "available") {
-            console.log("Seat just taken!");
+            toast.error("Seat just taken!");
             return;
         }
 
@@ -97,7 +98,7 @@ export const useSeatStore = create<Store>((set, get) => ({
         });
 
         if (isSelected) {
-            console.log("Seat taken by someone else!");
+            toast.error("Seat taken by someone else!");
         }
     },
 
