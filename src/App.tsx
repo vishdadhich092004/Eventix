@@ -1,25 +1,35 @@
 import { useEffect } from "react";
-import { useSeatStore } from "./store/useSeatStore"
+import { useSeatStore } from "./store/useSeatStore";
 import { generateSeats } from "./seed/generateSeats";
+import Header from "./components/Header";
 import SeatGrid from "./components/SeatGrid";
+import CartPanel from "./components/CartPanel";
 import { useTimer } from "./hooks/useTimer";
 import { useConcurrency } from "./hooks/useConcurrency";
-import { Toaster } from "sonner";
+
 function App() {
-  const initSeats = useSeatStore((state)=> state.initSeats);
-  useEffect(()=>{
+  const initSeats = useSeatStore((state) => state.initSeats);
+
+  useEffect(() => {
     const seats = generateSeats();
     initSeats(seats);
-  },[])
+  }, [initSeats]);
+
   useTimer();
-  useConcurrency();   
+  useConcurrency();
+
   return (
-    <>
-    <Toaster richColors position="top-right" />
-    <div className="min-h-screen flex justify-center items-center">
-      <SeatGrid />
+    <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden relative">
+      <Header />
+
+      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 w-full mx-auto">
+        {/* Seat Grid — takes the main area */}
+        <SeatGrid />
+      </main>
+
+      {/* Cart Panel — sliding sidebar constrainted from right */}
+      <CartPanel />
     </div>
-    </>
   );
 }
 
