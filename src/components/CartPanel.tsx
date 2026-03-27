@@ -12,6 +12,7 @@ function formatTime(seconds: number): string {
 
 export default function CartPanel() {
   const [isMobileClosed, setIsMobileClosed] = useState(false);
+  const [confirming, setConfirming] = useState(false);
   const seats = useSeatStore((s) => s.seats);
   const selectedSeatIds = useSeatStore((s) => s.selectedSeatIds);
   const deselectSeat = useSeatStore((s) => s.deselectSeat);
@@ -31,6 +32,11 @@ export default function CartPanel() {
     : 0;
   const isUrgent = cartSecondsLeft <= 60;
   
+  // Reset confirming state when cart changes
+  useEffect(() => {
+    setConfirming(false);
+  }, [selectedSeatIds.length]);
+
   useEffect(() => {
     if (selectedSeats.length > 0) {
       setIsMobileClosed(false);
@@ -38,6 +44,11 @@ export default function CartPanel() {
   }, [selectedSeats.length]);
 
   const isPanelOpen = hasItems && !isMobileClosed;
+
+  const handleCheckout = () => {
+    checkout();
+    setConfirming(false);
+  };
 
   return (
     <>
@@ -179,12 +190,33 @@ export default function CartPanel() {
             <span className="text-sm font-medium text-muted-foreground">Total Amount</span>
             <span className="text-2xl font-bold tracking-tight">₹{total.toLocaleString()}</span>
           </div>
-          <button
-            onClick={checkout}
-            className="w-full py-4 rounded-xl font-semibold text-[15px] bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shadow-md"
-          >
-            Checkout ({selectedSeats.length} {selectedSeats.length === 1 ? "seat" : "seats"})
-          </button>
+
+          {!confirming ? (
+            <button
+              onClick={() => setConfirming(true)}
+              className="w-full py-4 rounded-xl font-semibold text-[15px] bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 hover:opacity-90 active:scale-[0.98] transition-all cursor-pointer shadow-md"
+            >
+              Checkout ({selectedSeats.length} {selectedSeats.length === 1 ? "seat" : "seats"})
+            </button>
+          ) : (
+            <div className="space-y-2">
+              <p className="text-sm text-center text-muted-foreground">Confirm your booking?</p>
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setConfirming(false)}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm border border-border hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleCheckout}
+                  className="flex-1 py-3 rounded-xl font-semibold text-sm bg-emerald-600 text-white hover:bg-emerald-700 active:scale-[0.98] transition-all cursor-pointer shadow-md"
+                >
+                  Confirm Booking
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
     </>

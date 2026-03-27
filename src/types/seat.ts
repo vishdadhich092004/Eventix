@@ -4,7 +4,7 @@ export type SeatTier = "VIP" | "General";
 
 export const SeatPrice = {
     VIP: 350,
-    General: 100,
+    General: 150,
 } as const
 export type Seat = {
     id: string;

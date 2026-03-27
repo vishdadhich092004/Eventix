@@ -1,159 +1,83 @@
-# Eventix — High-Concurrency Event Ticket Booking
+# Eventix — Live Seat Booking
 
-A live seat selection interface for a venue that simulates real-time concurrency — seats can be taken by other users at any moment, and your selections are held under a countdown timer.
+A real-time, high-concurrency seat selection interface for venue ticket booking. Built with React, TypeScript, and Zustand.
 
-> **Assignment**: Option 3 — High-Concurrency Event Ticket Booking
-
----
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![React](https://img.shields.io/badge/React_19-61DAFB?logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)
+![Zustand](https://img.shields.io/badge/Zustand-433D37?logo=data:image/svg+xml;base64,&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind_CSS_4-06B6D4?logo=tailwindcss&logoColor=white)
 
 ## Features
 
-### 1. Data & API
-- **Mock Venue Layout** — 100 seats (10 rows × 10 columns) across two pricing tiers:
-  | Tier | Rows | Price |
-  |------|------|-------|
-  | VIP | A – C (first 3 rows) | ₹350 |
-  | General | D – J (remaining 7 rows) | ₹100 |
-- **Concurrency Simulation** — An interval fires every **5 seconds**, randomly marking **1–2 available seats** as "Unavailable" to simulate other users purchasing tickets in real time.
-
-### 2. Seat Selection Interface
-- **Visual Seat Map** — A grid layout with seats rendered as armchair icons, color-coded by tier and status:
-  - *Available* — Muted / clickable
-  - *Selected by You* — Bold fill + checkmark indicator
-  - *Unavailable* — Faded / disabled
-- **VIP / General Divider** — Visual separator with distinct VIP labeling
-- **Center Aisle** — Aisle gap after column 5 for realistic venue feel
-- **Sliding Cart Panel** — Side panel showing selected seats, cart total, individual seat breakdown, and a checkout button with responsive mobile behavior
-
-### 3. Core Logic
-- **5-Minute Countdown Timer** — Selecting a seat puts it in a "Reserved" state. A **global countdown timer** (based on the soonest-expiring seat) is displayed in the cart. If the timer hits `0:00` before checkout, the **entire cart is cleared** and all seats revert to "Available."
-- **Conflict Resolution** — If you click a seat at the exact moment the concurrency interval marks it unavailable, the store **rejects the click** and shows a **"Seat just taken!"** toast notification.
-- **Checkout** — Confirms the booking, marks selected seats as permanently unavailable, and clears the cart.
-- **Reset** — A reset button to restore all seats back to available state.
-
----
+- **100-seat venue layout** — 10×10 grid with VIP (₹350) and General (₹150) tiers, center aisle, and row labels
+- **Real-time concurrency simulation** — every 5 seconds, 1–2 available seats are randomly marked as taken to simulate concurrent users
+- **5-minute reservation timer** — selecting a seat starts a countdown; if unconfirmed, the entire cart expires and seats revert to available
+- **Conflict resolution** — clicking a seat at the exact moment it becomes unavailable shows a "Seat just taken!" toast
+- **Sliding cart panel** — shows selected seats, per-seat pricing, total, and a global countdown timer with urgency state
+- **Checkout confirmation** — confirmation dialog before finalizing a booking
+- **Dark/Light mode** — animated theme toggle using the View Transitions API
+- **State persistence** — cart and seat state survive page refreshes via Zustand persist middleware
+- **Accessible** — full keyboard navigation, ARIA roles, screen reader labels
 
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Framework | React 19 + TypeScript |
-| Build Tool | Vite 8 |
-| State Management | Zustand (with `persist` middleware) |
+| Build | Vite 8 |
+| State | Zustand (with persist middleware) |
 | Styling | Tailwind CSS 4 + shadcn/ui |
 | Icons | Phosphor Icons |
-| Notifications | Sonner (toast library) |
-| Theming | next-themes (dark/light mode) |
+| Notifications | Sonner |
 
----
+## Getting Started
+
+```bash
+# Install dependencies
+npm install
+
+# Start dev server
+npm run dev
+
+# Build for production
+npm run build
+```
 
 ## Project Structure
 
 ```
 src/
 ├── components/
-│   ├── CartPanel.tsx        # Sliding cart sidebar with timer & checkout
-│   ├── Header.tsx           # App header with live stats & occupancy bar
-│   ├── Legend.tsx            # Seat status legend
-│   ├── Seat.tsx             # Individual seat (memoized for performance)
-│   ├── SeatGrid.tsx         # Venue grid layout with rows & aisle
-│   ├── mode-toggle.tsx      # Light/dark theme toggle
-│   ├── theme-provider.tsx   # Theme context provider
-│   └── ui/                  # shadcn/ui primitives
+│   ├── CartPanel.tsx       # Sliding cart sidebar with timer & checkout
+│   ├── Header.tsx          # App header with stats & occupancy bar
+│   ├── Legend.tsx           # Seat status legend
+│   ├── Seat.tsx            # Individual seat component (memoized)
+│   ├── SeatGrid.tsx        # Venue grid layout with VIP/General sections
+│   ├── mode-toggle.tsx     # Theme toggle wrapper
+│   ├── theme-provider.tsx  # Dark/Light theme context
+│   └── ui/                 # shadcn/ui primitives
 ├── hooks/
-│   ├── useConcurrency.ts    # Simulates other users buying seats (5s interval)
-│   ├── useCountdown.ts      # Single interval computing time-left for all seats
-│   └── useTimer.ts          # Releases expired seat reservations
+│   ├── useConcurrency.ts   # Simulates other users buying seats (5s interval)
+│   ├── useCountdown.ts     # Single interval countdown for all selected seats
+│   └── useTimer.ts         # Checks for expired reservations
 ├── lib/
-│   ├── config.ts            # Centralized app config (grid size, timer durations)
-│   └── utils.ts             # Utility helpers (cn)
+│   ├── config.ts           # Centralized venue & timing configuration
+│   └── utils.ts            # Tailwind merge utility
 ├── seed/
-│   └── generateSeats.ts     # Generates the 100-seat venue layout
+│   └── generateSeats.ts    # Generates 100-seat venue layout
 ├── store/
-│   └── useSeatStore.ts      # Zustand store — all seat & cart state logic
+│   └── useSeatStore.ts     # Zustand store with all seat actions
 ├── types/
-│   └── seat.ts              # TypeScript types (Seat, SeatTier, SeatStatus)
-├── App.tsx                  # Root component, initializes hooks
-├── main.tsx                 # Entry point with ThemeProvider & Toaster
-└── index.css                # Global styles & Tailwind imports
+│   └── seat.ts             # Seat type definitions & pricing
+├── App.tsx                 # Root component
+├── main.tsx                # Entry point with providers
+└── index.css               # Design tokens & global styles
 ```
 
----
+## Design Decisions
 
-## Getting Started
-
-### Prerequisites
-- **Node.js** ≥ 18
-- **npm** ≥ 9
-
-### Installation
-
-```bash
-# Clone the repository
-git clone https://github.com/vishdadhich092004/Eventix.git
-cd Eventix
-
-# Install dependencies
-npm install
-
-# Start the dev server
-npm run dev
-```
-
-The app will be available at `http://localhost:5173`.
-
-### Build for Production
-
-```bash
-npm run build
-npm run preview
-```
-
----
-
-## How It Works
-
-### Concurrency Simulation
-The `useConcurrency` hook sets up a `setInterval` that runs every 5 seconds. On each tick, it picks 1–2 random available seats and marks them as unavailable via the Zustand store, simulating real-time competition for tickets.
-
-### Seat Reservation & Timer
-1. Clicking an available seat calls `selectSeat()`, setting its status to `"selected"` and recording a `reservedUntil` timestamp (now + 5 minutes).
-2. The `useTimer` hook runs every second, calling `releaseExpiredSeats()` — if **any** seat's reservation has expired, the **entire cart is cleared**.
-3. The `useCountdown` hook computes seconds-left for all selected seats in a single interval (avoids per-seat timers), returning a `Map<seatId, secondsRemaining>`.
-
-### Conflict Resolution
-When `selectSeat(id)` is called, it reads the current seat status from the store. If the seat is anything other than `"available"` (e.g., the concurrency interval just marked it `"unavailable"`), the action is rejected and a `"Seat just taken!"` toast appears.
-
-### State Persistence
-Zustand's `persist` middleware saves seat and cart state to `localStorage`, so refreshing the page doesn't lose your selections.
-
----
-
-## Configuration
-
-All tunable parameters are in `src/lib/config.ts`:
-
-```ts
-export const CONFIG = {
-  VENUE_COLS: 10,
-  VENUE_ROWS: 10,
-  VIP_ROWS: 3,
-  AISLE_AFTER_COL: 4,
-  RESERVE_TIME_MS: 5 * 60 * 1000,   // 5 minutes
-  CONCURRENCY_INTERVAL_MS: 5000,     // 5 seconds
-};
-```
-
----
-
-## Assignment Requirement Mapping
-
-| Requirement | Implementation |
-|---|---|
-| ≥100 seats with pricing tiers | 100 seats: VIP (₹350) & General (₹100) |
-| Concurrency simulation (5s interval, 1-2 seats) | `useConcurrency` hook |
-| Visual seat map with color-coded statuses | `SeatGrid` + `Seat` components with tier/status styling |
-| Side panel with cart total & checkout | `CartPanel` sliding sidebar |
-| 5-min countdown on seat selection | `reservedUntil` timestamp + `useCountdown` / `useTimer` hooks |
-| Cart cleared if timer expires | `releaseExpiredSeats()` clears entire cart |
-| Conflict resolution with error message | `selectSeat()` rejects if not `"available"`, shows toast |
+- **Global cart timer** — uses the soonest-expiring seat's countdown; if any seat expires, the entire cart clears (prevents partial stale reservations)
+- **Single countdown interval** — `useCountdown` runs one `setInterval` for all seats (O(n) per tick) instead of per-seat intervals
+- **Optimistic conflict resolution** — `selectSeat` checks status synchronously before mutation; the concurrency simulation uses the same `markUnavailable` action, ensuring atomic state transitions
+- **Seat memoization** — `React.memo` on `Seat` + `useCallback` on handlers minimizes rerenders on the 100-element grid
