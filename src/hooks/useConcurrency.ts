@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { useSeatStore } from "../store/useSeatStore";
+import { CONFIG } from "../lib/config";
 
 export const useConcurrency = () => {
     useEffect(() => {
@@ -25,7 +26,7 @@ export const useConcurrency = () => {
                     markUnavailable(randomSeat.id);
                 }
             }
-        }, 5000);
+        }, CONFIG.CONCURRENCY_INTERVAL_MS);
 
         return () => clearInterval(interval);
     }, []);
