@@ -1,10 +1,11 @@
 import { memo, useCallback } from "react";
-import { type Seat as SeatType } from "../types/seat";
 import { useSeatStore } from "../store/useSeatStore";
 import { Armchair } from "@phosphor-icons/react";
 import clsx from "clsx";
 
-function SeatComponent({ seat }: { seat: SeatType }) {
+function SeatComponent({ seatId }: { seatId: string }) {
+  // Each seat subscribes to its own slice — only re-renders when THIS seat changes
+  const seat = useSeatStore((state) => state.seats[seatId]);
   const selectSeat = useSeatStore((state) => state.selectSeat);
   const deselectSeat = useSeatStore((state) => state.deselectSeat);
 
@@ -25,6 +26,8 @@ function SeatComponent({ seat }: { seat: SeatType }) {
     },
     [handleClick]
   );
+
+  if (!seat) return null;
 
   const isVIP = seat.tier === "VIP";
   const isUnavailable = seat.status === "unavailable";

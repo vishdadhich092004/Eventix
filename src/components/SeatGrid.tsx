@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { useSeatStore } from "../store/useSeatStore";
 import { CONFIG } from "../lib/config";
 import Seat from "./Seat";
@@ -7,19 +7,26 @@ import Legend from "./Legend";
 export default function SeatGrid() {
   const seats = useSeatStore((state) => state.seats);
 
+  // Derive seat IDs once — the layout (row/col) never changes after init.
+  // We only recompute when the number of seats changes (i.e. on init).
+  const seatCount = Object.keys(seats).length;
+  const layoutRef = useRef<string[][]>([]);
+
   const rows = useMemo(() => {
     const seatArray = Object.values(seats).sort((a, b) => {
       if (a.row === b.row) return a.col - b.col;
       return a.row - b.row;
     });
 
-    // Group into rows
-    const grouped: (typeof seatArray)[] = [];
+    // Store only IDs grouped by row — stable across status changes
+    const grouped: string[][] = [];
     for (let i = 0; i < seatArray.length; i += CONFIG.VENUE_COLS) {
-      grouped.push(seatArray.slice(i, i + CONFIG.VENUE_COLS));
+      grouped.push(seatArray.slice(i, i + CONFIG.VENUE_COLS).map((s) => s.id));
     }
+    layoutRef.current = grouped;
     return grouped;
-  }, [seats]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [seatCount]);
 
   return (
     <div className="flex flex-col items-center gap-6 animate-[fadeInUp_0.5s_ease-out] w-full max-w-full">
@@ -51,9 +58,9 @@ export default function SeatGrid() {
                   {String.fromCharCode(65 + rowIdx)}
                 </span>
 
-                {row.map((seat, colIdx) => (
-                  <div key={seat.id} className="flex items-center">
-                    <Seat seat={seat} />
+                {row.map((seatId, colIdx) => (
+                  <div key={seatId} className="flex items-center">
+                    <Seat seatId={seatId} />
                     {/* Aisle gap */}
                     {colIdx === CONFIG.AISLE_AFTER_COL && <div className="w-6 sm:w-10 md:w-16 shrink-0" />}
                   </div>
