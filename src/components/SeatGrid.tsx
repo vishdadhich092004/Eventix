@@ -22,15 +22,16 @@ export default function SeatGrid() {
   }, [seats]);
 
   return (
-    <div className="flex flex-col items-center gap-6 animate-[fadeInUp_0.5s_ease-out]">
+    <div className="flex flex-col items-center gap-6 animate-[fadeInUp_0.5s_ease-out] w-full max-w-full">
       <Legend />
 
       <div
-        className="relative px-2 sm:px-6 py-6 rounded-2xl border border-transparent"
+        className="relative px-2 sm:px-6 py-6 rounded-2xl border border-transparent w-full max-w-full overflow-x-auto pb-4"
+        style={{ scrollbarWidth: "none" }}
         role="group"
         aria-label="Seat selection grid"
       >
-        <div className="flex flex-col gap-3 sm:gap-4">
+        <div className="flex flex-col items-center gap-3 sm:gap-4 min-w-max w-max mx-auto px-2 sm:px-4">
           {rows.map((row, rowIdx) => (
             <div key={rowIdx}>
               {/* VIP / General divider */}
@@ -46,7 +47,7 @@ export default function SeatGrid() {
 
               <div className="flex items-center gap-2 sm:gap-3">
                 {/* Row label */}
-                <span className="w-4 sm:w-6 text-right text-xs font-semibold text-muted-foreground mr-1 sm:mr-3">
+                <span className="w-4 sm:w-6 text-right text-xs font-semibold text-muted-foreground mr-1 sm:mr-3 shrink-0">
                   {String.fromCharCode(65 + rowIdx)}
                 </span>
 
@@ -54,11 +55,11 @@ export default function SeatGrid() {
                   <div key={seat.id} className="flex items-center">
                     <Seat seat={seat} />
                     {/* Aisle gap */}
-                    {colIdx === CONFIG.AISLE_AFTER_COL && <div className="w-6 sm:w-10 md:w-16" />}
+                    {colIdx === CONFIG.AISLE_AFTER_COL && <div className="w-6 sm:w-10 md:w-16 shrink-0" />}
                   </div>
                 ))}
 
-                <span className="w-4 sm:w-6 text-left text-xs font-semibold text-muted-foreground ml-1 sm:ml-3">
+                <span className="w-4 sm:w-6 text-left text-xs font-semibold text-muted-foreground ml-1 sm:ml-3 shrink-0">
                   {String.fromCharCode(65 + rowIdx)}
                 </span>
               </div>

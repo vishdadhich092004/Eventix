@@ -41,12 +41,12 @@ function SeatComponent({ seat }: { seat: SeatType }) {
       aria-pressed={isSelected}
       aria-disabled={isUnavailable}
       className={clsx(
-        "relative flex items-center justify-center transition-transform duration-300 ease-out select-none",
+        "relative flex items-center justify-center transition-transform duration-300 ease-out select-none shrink-0",
         "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-zinc-400 rounded-md",
         isVIP ? "w-12 h-12 sm:w-14 sm:h-14" : "w-10 h-10 sm:w-12 sm:h-12",
         {
           "cursor-pointer hover:scale-110": isAvailable || isSelected,
-          "cursor-not-allowed opacity-30": isUnavailable,
+          "cursor-not-allowed opacity-40 dark:opacity-50": isUnavailable,
         }
       )}
     >
@@ -65,8 +65,8 @@ function SeatComponent({ seat }: { seat: SeatType }) {
             "text-amber-500 dark:text-amber-400 drop-shadow-lg": isSelected && isVIP,
             
             // Unavailable
-            "text-zinc-300 dark:text-zinc-700": isUnavailable && !isVIP,
-            "text-amber-900/30 dark:text-amber-900/40": isUnavailable && isVIP,
+            "text-zinc-300 dark:text-zinc-500": isUnavailable && !isVIP,
+            "text-amber-900/30 dark:text-amber-700/50": isUnavailable && isVIP,
           }
         )}
       />

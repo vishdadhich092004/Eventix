@@ -4,7 +4,7 @@ export default function Legend() {
   const items = [
     { label: "Available", iconColor: "text-zinc-400 dark:text-zinc-500", weight: "regular" as const },
     { label: "Selected", iconColor: "text-zinc-900 dark:text-zinc-100", weight: "fill" as const },
-    { label: "Unavailable", iconColor: "text-zinc-300 dark:text-zinc-700", weight: "regular" as const },
+    { label: "Unavailable", iconColor: "text-zinc-300 dark:text-zinc-500 opacity-40 dark:opacity-50", weight: "regular" as const },
     { label: "VIP", iconColor: "text-amber-600/70 dark:text-amber-500/70", weight: "duotone" as const },
   ];
 

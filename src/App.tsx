@@ -22,7 +22,7 @@ function App() {
     <div className="min-h-screen flex flex-col bg-background text-foreground overflow-x-hidden relative">
       <Header />
 
-      <main className="flex-1 flex items-center justify-center p-4 sm:p-8 lg:p-12 w-full mx-auto">
+      <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 lg:p-12 w-full max-w-full mx-auto">
         {/* Seat Grid — takes the main area */}
         <SeatGrid />
       </main>
